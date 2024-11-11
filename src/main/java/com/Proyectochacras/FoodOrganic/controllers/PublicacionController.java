@@ -44,18 +44,13 @@ public class PublicacionController {
     // Modificar una publicación
     @PutMapping("/modificar/{id}")
     public ResponseEntity<String> modificarPublicacion(@PathVariable Long id, @RequestBody Publicacion publicacion) {
-        Publicacion result = publicacionService.modificarPublicacion(
-                id,
-                publicacion.getNombreChacra(),
-                publicacion.getDescripcion(),
-                publicacion.getUbicacionChacra(),
-                publicacion.getEstado().toString()
-        );
+        Publicacion result = publicacionService.modificarPublicacion(id, publicacion);
         if (result != null) {
             return new ResponseEntity<>("Publicación modificada correctamente", HttpStatus.OK);
         }
         return new ResponseEntity<>("Publicación no encontrada", HttpStatus.NOT_FOUND);
     }
+
 
     // Eliminar una publicación
     @DeleteMapping("/eliminar/{id}")

@@ -1,37 +1,46 @@
 package com.Proyectochacras.FoodOrganic.controllers;
 
+import com.Proyectochacras.FoodOrganic.models.Usuario;
+import com.Proyectochacras.FoodOrganic.service.UsuarioService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.ModelAttribute;
 @Controller
 public class UsuarioController {
 
-    // Ruta para mostrar el formulario de login
+    @Autowired
+    private UsuarioService usuarioService;
+
+    // Mostrar el formulario de registro
+    @GetMapping("/user/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("usuario", new Usuario());  // El objeto se llama 'usuario'
+        return "registro"; // Vista que corresponde a 'registro.html'
+    }
+
+    // Procesar el formulario de registro
+    @PostMapping("/user/register")
+    public String registerUser(@Valid @ModelAttribute("usuario") Usuario usuario, BindingResult result) {
+        if (result.hasErrors()) {
+            return "registro";  // Si hay errores de validación, vuelve al formulario
+        }
+        try {
+            usuarioService.saveUsuario(usuario);  // Guardar el usuario en la base de datos
+            return "redirect:/login"; // Redirige a la página de login después de un registro exitoso
+        } catch (Exception e) {
+            e.printStackTrace(); // Mostrar el error en la consola
+            return "error"; // Asegúrate de tener una vista 'error.html'
+        }
+    }
+
+    // Mostrar el formulario de login
     @GetMapping("/login")
     public String showLoginForm() {
-        return "login"; // Asegúrate de que este nombre coincida con el archivo .html
-    }
-
-    // Ruta para manejar el inicio de sesión (POST)
-    @PostMapping("/login")
-    public String handleLogin(@RequestParam String username, @RequestParam String password) {
-        // Lógica de autenticación aquí
-        return "redirect:/home"; // Redirigir a la página de inicio después de un login exitoso
-    }
-
-    // Ruta para mostrar el formulario de registro
-    @GetMapping("/registerGet")
-    public String showRegistrationForm() {
-        return "registro"; // Asegúrate de que este nombre coincida con el archivo .html
-    }
-
-
-    // Ruta para manejar el registro (POST)
-    @PostMapping("/registerPost")
-    public String handleRegistration(@RequestParam String username, @RequestParam String password) {
-        // Lógica de registro aquí
-        return "redirect:/login"; // Redirige a la página de login después de un registro exitoso
+        return "login";  // Vista que corresponde a 'login.html'
     }
 }

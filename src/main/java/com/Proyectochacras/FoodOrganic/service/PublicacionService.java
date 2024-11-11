@@ -45,20 +45,21 @@ public class PublicacionService {
         return publicacionRepository.findById(id);
     }
 
+
     // Modificar una publicación existente
-    public Publicacion modificarPublicacion(Long id, String nombreChacra, String descripcion,
-                                            String ubicacionChacra, String estado) {
+    public Publicacion modificarPublicacion(Long id, Publicacion publicacion) {
         Optional<Publicacion> publicacionOpt = publicacionRepository.findById(id);
         if (publicacionOpt.isPresent()) {
-            Publicacion publicacion = publicacionOpt.get();
-            publicacion.setNombreChacra(nombreChacra);
-            publicacion.setDescripcion(descripcion);
-            publicacion.setUbicacionChacra(ubicacionChacra);
-            publicacion.setEstado(EstadoChacra.valueOf(estado));
-            return publicacionRepository.save(publicacion);
+            Publicacion publicacionExistente = publicacionOpt.get();
+            publicacionExistente.setNombreChacra(publicacion.getNombreChacra());
+            publicacionExistente.setDescripcion(publicacion.getDescripcion());
+            publicacionExistente.setUbicacionChacra(publicacion.getUbicacionChacra());
+            publicacionExistente.setEstado(publicacion.getEstado());
+            return publicacionRepository.save(publicacionExistente);
         }
         return null; // Devuelve null si la publicación no existe
     }
+
 
     // Eliminar una publicación por ID
     public boolean eliminarPublicacion(Long id) {
@@ -69,4 +70,6 @@ public class PublicacionService {
         }
         return false; // Si no se encuentra la publicación
     }
+
+
 }

@@ -16,23 +16,17 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests(auth -> auth
-                        .requestMatchers("/web/index.html", "/web/js/**", "/web/css/**", "/web/img/**").permitAll()  // Rutas estáticas
-                        .requestMatchers("/api/public/**").permitAll()  // Si tienes APIs públicas
-                        .requestMatchers("/api/catalogo/**").permitAll()  // Rutas del catálogo que no requieren autenticación
-                        .requestMatchers("/admin/**").hasRole("ADMIN")  // Solo ADMIN puede acceder a /admin/**
-                        .requestMatchers("/clientes/**").hasRole("CLIENTE")  // Solo CLIENTE puede acceder a /clientes/**
-                        .anyRequest().authenticated()  // Requiere autenticación para cualquier otra ruta
+                        .requestMatchers("/**").permitAll()  // Permite todo el acceso a cualquier ruta
                 )
+                .csrf(csrf -> csrf.disable())  // Deshabilita CSRF
                 .formLogin(form -> form
-                        .loginPage("/login")  // Página de login personalizada
-                        .defaultSuccessUrl("/publicaciones", true)  // Redirección después de login
-                        .permitAll()
+                        .loginPage("/login")  // Página de login personalizada (si la tienes)
+                        .permitAll()  // Permite acceso a la página de login sin autenticación
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
-                        .permitAll()
-                )
-                .csrf(csrf -> csrf.disable());  // Desactiva CSRF si es necesario
+                        .logoutSuccessUrl("/login?logout")  // Redirige a login después de logout
+                        .permitAll()  // Permite acceso a la página de logout sin autenticación
+                );
         return http.build();
     }
 
