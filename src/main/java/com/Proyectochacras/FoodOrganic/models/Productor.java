@@ -1,44 +1,22 @@
 package com.Proyectochacras.FoodOrganic.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import java.util.List;
+
 
 @Entity
-
 public class Productor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nombre;
+    @Column(unique = true)
     private String correo;
-    private String contrasena; // Contraseña en texto plano (en producción deberías cifrarla)
 
+    private String contrasena;
 
     @Enumerated(EnumType.STRING)
-    private Rol rol; // Rol del productor (USUARIO, ADMINISTRADOR)
-
-    @OneToMany(mappedBy = "productor", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-
-
-    private List<Publicacion> publicaciones; // Relación uno a muchos con publicaciones
-
-    // Constructor vacío, necesario para crear una instancia de Productor
-    public Productor() {}
-
-
-    // Constructor con parámetros (si lo necesitas)
-    public Productor(String nombre, String correo, String contrasena, Rol rol) {
-        this.nombre = nombre;
-        this.correo = correo;
-        this.contrasena = contrasena;
-        this.rol = rol;
-    }
+    private Rol rol; // Asumiendo que tienes un enum Rol para manejar los roles
 
     // Getters y Setters
     public Long getId() {
@@ -47,14 +25,6 @@ public class Productor {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
     }
 
     public String getCorreo() {
@@ -79,24 +49,5 @@ public class Productor {
 
     public void setRol(Rol rol) {
         this.rol = rol;
-    }
-
-    public List<Publicacion> getPublicaciones() {
-        return publicaciones;
-    }
-
-    public void setPublicaciones(List<Publicacion> publicaciones) {
-        this.publicaciones = publicaciones;
-    }
-
-    // Métodos para agregar y eliminar publicaciones
-    public void agregarPublicacion(Publicacion publicacion) {
-        this.publicaciones.add(publicacion);
-        publicacion.setProductor(this); // Establece la relación inversa
-    }
-
-    public void eliminarPublicacion(Publicacion publicacion) {
-        this.publicaciones.remove(publicacion);
-        publicacion.setProductor(null); // Elimina la relación inversa
     }
 }

@@ -16,6 +16,7 @@ public class PublicacionController {
     @Autowired
     private PublicacionService publicacionService;
 
+
     // Obtener todas las publicaciones
     @GetMapping
     public ResponseEntity<List<Publicacion>> listarPublicaciones() {

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Publicaciones</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Vincula un archivo CSS si tienes -->
+</head>
+<body>
+<h1>Lista de Publicaciones</h1>
+<div id="publicaciones-container"></div>
+<button onclick="mostrarFormulario()">Agregar Publicación</button>
+
+<!-- Formulario para agregar o modificar publicaciones -->
+<div id="formulario" style="display:none;">
+    <h2 id="form-title">Nueva Publicación</h2>
+    <form id="publicacionForm">
+        <input type="hidden" id="productorId" value="1"> <!-- Ajusta según cómo obtengas el ID del productor -->
+        <label for="nombreChacra">Nombre de la Chacra:</label>
+        <input type="text" id="nombreChacra" required><br>
+        <label for="descripcion">Descripción:</label>
+        <input type="text" id="descripcion" required><br>
+        <label for="ubicacionChacra">Ubicación:</label>
+        <input type="text" id="ubicacionChacra" required><br>
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" required><br>
+        <button type="button" onclick="crearPublicacion()">Enviar</button>
+    </form>
+</div>
+
+<script>
+    // Obtener y mostrar todas las publicaciones
+    function cargarPublicaciones() {
+        fetch('/api/publicaciones')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('publicaciones-container');
+                container.innerHTML = ''; // Limpia el contenido anterior
+                data.forEach(publicacion => {
+                    const div = document.createElement('div');
+                    div.innerHTML = `
+                        <h3>${publicacion.nombreChacra}</h3>
+                        <p>${publicacion.descripcion}</p>
+                        <p>Ubicación: ${publicacion.ubicacionChacra}</p>
+                        <p>Estado: ${publicacion.estado}</p>
+                        <button onclick="eliminarPublicacion(${publicacion.id})">Eliminar</button>
+                        <hr>
+                    `;
+                    container.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Error al cargar las publicaciones:', error));
+    }
+
+    // Mostrar formulario de creación
+    function mostrarFormulario() {
+        document.getElementById('formulario').style.display = 'block';
+    }
+
+    // Crear una nueva publicación
+    function crearPublicacion() {
+        const productorId = document.getElementById('productorId').value;
+        const nombreChacra = document.getElementById('nombreChacra').value;
+        const descripcion = document.getElementById('descripcion').value;
+        const ubicacionChacra = document.getElementById('ubicacionChacra').value;
+        const estado = document.getElementById('estado').value;
+
+        fetch('/api/publicaciones/crear', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                productor: { id: productorId },
+                nombreChacra: nombreChacra,
+                descripcion: descripcion,
+                ubicacionChacra: ubicacionChacra,
+                estado: estado,
+            }),
+        })
+        .then(response => response.text())
+        .then(message => {
+            alert(message);
+            cargarPublicaciones();
+            document.getElementById('formulario').style.display = 'none';
+        })
+        .catch(error => console.error('Error al crear la publicación:', error));
+    }
+
+    // Eliminar una publicación
+    function eliminarPublicacion(id) {
+        fetch(`/api/publicaciones/eliminar/${id}`, {
+            method: 'DELETE',
+        })
+        .then(response => response.text())
+        .then(message => {
+            alert(message);
+            cargarPublicaciones();
+        })
+        .catch(error => console.error('Error al eliminar la publicación:', error));
+    }
+
+    // Carga las publicaciones al cargar la página
+    window.onload = cargarPublicaciones;
+</script>
+</body>
+</html>
